@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "sqlserver"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model entity {
+  id           String      @id @default(uuid())
+  entityName   String      @unique
+  entityNote   String?     @db.Text
+  active       Boolean     @default(true)
+  contactName  String?
+  contactEmail String?
+  contactPhone String?
+  Address      String?
+  city         String?
+  state        String?
+  zip          String?
+  equipment    equipment[]
+  properties   property[]
+}
+
+model property {
+  id           String      @id @default(uuid())
+  entityId     String
+  propertyName String      @unique
+  propertyNote String?     @db.Text
+  active       Boolean     @default(true)
+  contactName  String?
+  contactEmail String?
+  contactPhone String?
+  Address      String?
+  city         String?
+  state        String?
+  zip          String?
+  buildings    building[]
+  equipment    equipment[]
+  entity       entity      @relation(fields: [entityId], references: [id], onUpdate: NoAction)
+  units        unit[]
+}
+
+model building {
+  id             String      @id @default(uuid())
+  propertyId     String
+  buildingNumber String?
+  buildingNote   String?     @db.Text
+  active         Boolean     @default(true)
+  property       property    @relation(fields: [propertyId], references: [id], onUpdate: NoAction)
+  equipment      equipment[]
+  units          unit[]
+}
+
+model unit {
+  id              String      @id @default(uuid())
+  propertyId      String
+  buildingId      String
+  unitNumber      String?
+  unitDescription String?     @db.Text
+  active          Boolean     @default(true)
+  contactName     String?
+  contactEmail    String?
+  contactPhone    String?
+  Address         String?
+  city            String?
+  state           String?
+  zip             String?
+  equipment       equipment[]
+  building        building    @relation(fields: [buildingId], references: [id], onUpdate: NoAction)
+  property        property    @relation(fields: [propertyId], references: [id], onUpdate: NoAction)
+}
+
+model equipmentType {
+  id                String      @id @default(uuid())
+  equipmentTypeName String      @unique
+  equipmentTypeDesc String?     @db.Text
+  active            Boolean     @default(true)
+  equipment         equipment[]
+}
+
+model manufacturer {
+  id               String      @id @default(uuid())
+  manufacturerName String      @unique
+  active           Boolean     @default(true)
+  equipment        equipment[]
+}
+
+model equipment {
+  id                String         @id @default(uuid())
+  entityId          String
+  propertyId        String
+  buildingId        String
+  unitId            String
+  equipmentTypeId   String
+  manufacturerId    String
+  purchaseDate      DateTime
+  purchasePrice     Float
+  purchasedFrom     String
+  modelNumber       String
+  serialNumber      String
+  warrantyDate      DateTime
+  active            Boolean        @default(true)
+  equipmentStatusId String
+  building          building       @relation(fields: [buildingId], references: [id], onUpdate: NoAction)
+  entity            entity         @relation(fields: [entityId], references: [id], onUpdate: NoAction)
+  equipmentStatus   eqipmentStatus @relation(fields: [equipmentStatusId], references: [id], onUpdate: NoAction)
+  equipmentType     equipmentType  @relation(fields: [equipmentTypeId], references: [id], onUpdate: NoAction)
+  manufacturer      manufacturer   @relation(fields: [manufacturerId], references: [id], onUpdate: NoAction)
+  property          property       @relation(fields: [propertyId], references: [id], onUpdate: NoAction)
+  unit              unit           @relation(fields: [unitId], references: [id], onUpdate: NoAction)
+}
+
+model eqipmentStatus {
+  id        String      @id
+  status    String      @unique
+  equipment equipment[]
+}
