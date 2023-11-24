@@ -16,7 +16,7 @@ model entity {
   contactName  String?
   contactEmail String?
   contactPhone String?
-  Address      String?
+  address      String?
   city         String?
   state        String?
   zip          String?
@@ -33,7 +33,7 @@ model property {
   contactName  String?
   contactEmail String?
   contactPhone String?
-  Address      String?
+  address      String?
   city         String?
   state        String?
   zip          String?
@@ -64,7 +64,7 @@ model unit {
   contactName     String?
   contactEmail    String?
   contactPhone    String?
-  Address         String?
+  address         String?
   city            String?
   state           String?
   zip             String?
