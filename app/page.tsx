@@ -4,16 +4,16 @@ import EntityForm from "./entity/_components/EntityForm";
 export default function Home() {
   const entity: Entity = {
     id: "f3c4fecd-2f85-4c58-8c8d-611651a2ac8e",
-    entityName: "Testing Form",
-    entityNote: "Testing desc",
+    entityName: "JCM Living",
+    entityNote: "FKA Jersey Central Management",
     active: true,
-    contactName: "",
-    contactEmail: "",
-    contactPhone: "",
-    address: "",
-    city: "",
-    state: "",
-    zip: "",
+    contactName: "Steve Neiman",
+    contactEmail: "Steven@test",
+    contactPhone: "2540974165",
+    address: "1000 Airport Road",
+    city: "Lakewood",
+    state: "NJ",
+    zip: "08854",
   };
 
   return (
