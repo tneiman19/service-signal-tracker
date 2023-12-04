@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Input, Checkbox, Button } from "@nextui-org/react";
+import { Input, Checkbox, Button, Textarea } from "@nextui-org/react";
 import toast, { Toaster } from "react-hot-toast";
 
 type EntityFormData = z.infer<typeof postEntitySchema>;
@@ -44,94 +44,101 @@ const EntityForm = ({ entity }: { entity?: Entity }) => {
 
   return (
     <>
-      {" "}
       <Toaster />
-      <div className="flex justify-center items-center flex-col bg-gray-100 dark:bg-gray-800 pt-2">
-        <h1 className="sm:text-2xl md:text-4xl font-bold mb-8">
-          {entity ? `Updating Entity ${entity.entityName}` : "Creating Entity"}
-        </h1>
-        <form className="p-3 bg-white dark:bg-gray-700 shadow-lg rounded-lg">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+      <form className="container">
+        <h1 className="flex justify-center ">Entity Form</h1>
+
+        {error && (
+          <p className="flex flex-wrap justify-center text-red-500 ">{error}</p>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 ">
+          <div>
             <Input
               isRequired
               label="Entity Name"
               defaultValue={entity?.entityName}
-              className="w-full"
+              className=""
               {...register("entityName")}
             />
-            <Input
-              label="Entity Note"
-              defaultValue={entity?.entityNote || undefined}
-              className="w-full"
-              {...register("entityNote")}
-            />
-            <Input
-              label="Contact Name"
-              defaultValue={entity?.contactName || undefined}
-              className="w-full"
-              {...register("contactName")}
-            />
-            <Input
-              label="Contact Email"
-              defaultValue={entity?.contactEmail || undefined}
-              className="w-full"
-              {...register("contactEmail")}
-            />
-            <Input
-              label="Contact Phone"
-              defaultValue={entity?.contactPhone || undefined}
-              className="w-full"
-              {...register("contactPhone")}
-            />
-            <Input
-              label="Address"
-              defaultValue={entity?.address || undefined}
-              className="w-full"
-              {...register("address")}
-            />
-
-            <Input
-              label="City"
-              defaultValue={entity?.city || undefined}
-              className="w-full"
-              {...register("city")}
-            />
-            <Input
-              label="State"
-              defaultValue={entity?.state || undefined}
-              className="w-full"
-              {...register("state")}
-            />
-            <Input
-              label="Zip Code"
-              defaultValue={entity?.zip || undefined}
-              className="w-full"
-              {...register("zip")}
-            />
+            {errors.entityName && (
+              <p className="flex flex-wrap justify-center text-red-500 ">
+                {errors.entityName.message}
+              </p>
+            )}
           </div>
+          <Input
+            label="Contact Name"
+            defaultValue={entity?.contactName || undefined}
+            className=""
+            {...register("contactName")}
+          />
+          <Input
+            label="Contact Email"
+            defaultValue={entity?.contactEmail || undefined}
+            className=""
+            {...register("contactEmail")}
+          />
+          <Input
+            label="Contact Phone"
+            defaultValue={entity?.contactPhone || undefined}
+            className=""
+            {...register("contactPhone")}
+          />
+          <Input
+            label="Address"
+            defaultValue={entity?.address || undefined}
+            className=""
+            {...register("address")}
+          />
 
-          <div className="mt-4 flex flex-col sm:flex-row justify-between items-center">
-            <Checkbox
-              defaultSelected={
-                entity?.active !== undefined ? entity.active : true
-              }
-              size="sm"
-              {...register("active")}
-            >
-              Active
-            </Checkbox>
+          <Input
+            label="City"
+            defaultValue={entity?.city || undefined}
+            className=""
+            {...register("city")}
+          />
+          <Input
+            label="State"
+            defaultValue={entity?.state || undefined}
+            className=""
+            {...register("state")}
+          />
+          <Input
+            label="Zip Code"
+            defaultValue={entity?.zip || undefined}
+            className=""
+            {...register("zip")}
+          />
+        </div>
+        <Textarea
+          label="Entity Notes"
+          defaultValue={entity?.entityNote || undefined}
+          className="gap-4 p-4"
+          {...register("entityNote")}
+        />
+        <div className="grid lg:grid-cols-3 gap-4 p-4">
+          <Checkbox
+            defaultSelected={
+              entity?.active !== undefined ? entity.active : true
+            }
+            size="md"
+            {...register("active")}
+          >
+            Active
+          </Checkbox>
 
-            <Button
-              onClick={onSubmit}
-              color="primary"
-              isLoading={isSubmitting}
-              className="mt-2 sm:mt-0 w-full sm:w-auto dark:text-white"
-            >
-              {entity ? "Update Entity" : "Register Entity"}{" "}
-            </Button>
-          </div>
-        </form>
-      </div>
+          <Button
+            onClick={onSubmit}
+            color="primary"
+            isLoading={isSubmitting}
+            className="max-w-xs col-start-3"
+          >
+            {entity ? "Update Entity" : "Register Entity"}{" "}
+          </Button>
+        </div>
+      </form>
     </>
   );
 };
