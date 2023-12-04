@@ -11,7 +11,7 @@ datasource db {
 model Entity {
   id           String      @id @default(uuid())
   entityName   String      @unique
-  entityNote   String?     @db.Text
+  entityNote   String?
   active       Boolean     @default(true)
   contactName  String?
   contactEmail String?

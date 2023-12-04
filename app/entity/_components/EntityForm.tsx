@@ -1,14 +1,14 @@
 "use client";
 import { postEntitySchema } from "@/app/api/entity/validateEntity";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, Checkbox, Input, Textarea } from "@nextui-org/react";
 import { Entity } from "@prisma/client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Input, Checkbox, Button, Textarea } from "@nextui-org/react";
 import toast, { Toaster } from "react-hot-toast";
+import { z } from "zod";
 
 type EntityFormData = z.infer<typeof postEntitySchema>;
 
@@ -32,28 +32,29 @@ const EntityForm = ({ entity }: { entity?: Entity }) => {
       setIsSubmitting(true);
       if (entity) await axios.patch(`/api/entity/${entity.id}`, data);
       else await axios.post("/api/entity", data);
-      toast.success("Creared Entity " + data.entityName);
-      router.push("/"); //redirect to entity page
+      toast.success("Entity saved successfully")
+      // console.log(data)
+      router.push("/entity"); //redirect to entity page
       router.refresh();
     } catch (error: any) {
       setIsSubmitting(false);
-      setError(error.message);
-      toast.error("Error creating entity", error.message);
+      setError(error.response.data.errorMessage);
+      toast.error("Error saving entity");
+      //console.log(data);
+      console.log(error);
     }
   });
 
   return (
     <>
       <Toaster />
+      <form className="p-4 mx-auto md:max-w-xl sm:max-w-sm border border-gray-300 rounded-lg">
+        <h1 className="text-center text-2xl font-semibold text-gray-700 mb-4">
+          Entity Form
+        </h1>
+        {error && <p className="text-center text-red-500 ">{error}</p>}
 
-      <form className="container">
-        <h1 className="flex justify-center ">Entity Form</h1>
-
-        {error && (
-          <p className="flex flex-wrap justify-center text-red-500 ">{error}</p>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 ">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 ">
           <div>
             <Input
               isRequired
@@ -63,7 +64,7 @@ const EntityForm = ({ entity }: { entity?: Entity }) => {
               {...register("entityName")}
             />
             {errors.entityName && (
-              <p className="flex flex-wrap justify-center text-red-500 ">
+              <p className="text-center text-red-500 ">
                 {errors.entityName.message}
               </p>
             )}
@@ -119,16 +120,6 @@ const EntityForm = ({ entity }: { entity?: Entity }) => {
           {...register("entityNote")}
         />
         <div className="grid lg:grid-cols-3 gap-4 p-4">
-          <Checkbox
-            defaultSelected={
-              entity?.active !== undefined ? entity.active : true
-            }
-            size="md"
-            {...register("active")}
-          >
-            Active
-          </Checkbox>
-
           <Button
             onClick={onSubmit}
             color="primary"
