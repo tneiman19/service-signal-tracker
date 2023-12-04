@@ -3,17 +3,17 @@ import EntityForm from "./entity/_components/EntityForm";
 
 export default function Home() {
   const entity: Entity = {
-    id: "f3c4fecd-2f85-4c58-8c8d-611651a2ac8e",
-    entityName: "JCM Living",
-    entityNote: "FKA Jersey Central Management",
+    id: "24b09c86-fce7-4148-bcc9-216a3536c515",
+    entityName: "Testing Entity Form",
+    entityNote: "Testing Entity Form",
     active: true,
-    contactName: "Steve Neiman",
-    contactEmail: "Steven@test",
-    contactPhone: "2540974165",
-    address: "1000 Airport Road",
-    city: "Lakewood",
+    contactName: "Steve",
+    contactEmail: "Steve@test.com",
+    contactPhone: "1234567890",
+    address: "123 Test Avenue",
+    city: "Test",
     state: "NJ",
-    zip: "08854",
+    zip: "01234",
   };
 
   return (
@@ -21,7 +21,10 @@ export default function Home() {
       <h1>Service Signal</h1>
       <h2>Coming Soon...</h2>
 
-      <EntityForm />
+      <div className="flex">
+        <EntityForm />
+        <EntityForm entity={entity} />
+      </div>
     </>
   );
 }
