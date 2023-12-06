@@ -1,5 +1,5 @@
 import { Entity } from "@prisma/client";
-import EntityForm from "./entity/_components/EntityForm";
+import EntityForm from "@/app/entity/_components/EntityForm";
 
 export default function Home() {
   const entity: Entity = {
