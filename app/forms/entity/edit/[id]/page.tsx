@@ -1,7 +1,6 @@
 import axios from "axios";
 import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
-import prisma from "@/prisma/client";
 
 const EntityForm = dynamic(() => import("@/app/forms/entity/EntityForm"), {
   ssr: false,
@@ -13,11 +12,15 @@ interface Props {
 }
 
 const EditEntityPage = async ({ params }: Props) => {
-  const entity = await prisma.entity.findUnique({
-    where: { id: params.id },
-  });
-  if (!entity) return notFound();
-  return <EntityForm entity={entity} />;
+  try {
+    const entity = await axios.get(
+      `${process.env.APP_DOMAIN}/api/entity/${params.id}`
+    );
+    if (!entity) return notFound();
+    return <EntityForm entity={entity.data} />;
+  } catch (error) {
+    return notFound();
+  }
 };
 
 export default EditEntityPage;
