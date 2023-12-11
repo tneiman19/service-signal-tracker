@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { DeleteButton } from "@/components/DeleteButton";
+import { toast } from "react-toastify";
 
 type EntityFormData = z.infer<typeof postEntitySchema>;
 
@@ -33,14 +35,13 @@ const EntityForm = ({ entity }: { entity?: Entity }) => {
       setIsSubmitting(true);
       if (entity) await axios.patch(`/api/entity/${entity.id}`, data);
       else await axios.post("/api/entity", data);
-      //console.log(data);
-      router.push("/entity");
+      toast.success("Entity saved successfully.");
+      router.push("/");
       router.refresh();
     } catch (error: any) {
       setIsSubmitting(false);
       setError(error.response.data.errorMessage);
-      //console.log(data);
-      //console.log(error);
+      toast.error(`Issue saving entity.`);
     }
   });
 
@@ -132,6 +133,14 @@ const EntityForm = ({ entity }: { entity?: Entity }) => {
           />
         </div>
         <div className="grid lg:grid-cols-3 gap-4 p-4">
+          {entity?.id && (
+            <DeleteButton
+              delete_type="entity"
+              delete_name={entity?.entityName!}
+              api_url={`/api/entity/${entity?.id}`}
+              redirect_url={"/"}
+            />
+          )}
           <Button className="max-w-xs col-start-3" disabled={isSubmitting}>
             {entity ? "Update Entity" : "Register Entity"}{" "}
           </Button>
