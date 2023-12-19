@@ -1,18 +1,15 @@
 "use client";
 import { postEntitySchema } from "@/app/api/entity/validateEntity";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { DeleteButton } from "@/components/DeleteButton";
+import { Button, Input, Label, Textarea } from "@/components/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Entity } from "@prisma/client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { DeleteButton } from "@/components/DeleteButton";
 import { toast } from "react-toastify";
+import * as z from "zod";
 
 type EntityFormData = z.infer<typeof postEntitySchema>;
 

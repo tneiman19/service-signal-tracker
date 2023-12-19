@@ -1,13 +1,8 @@
 "use client";
-
 import { postPropertySchema } from "@/app/api/property/validateProperty";
 import { DeleteButton } from "@/components/DeleteButton";
 import SelectEntity from "@/components/SelectEntity";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { Button, Input, Label, Select, Textarea } from "@/components/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Property } from "@prisma/client";
 import axios from "axios";
