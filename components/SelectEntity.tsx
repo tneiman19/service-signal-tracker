@@ -1,6 +1,8 @@
 import axios from "axios";
 import { Entity } from "@prisma/client";
 import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
 import {
   Select,
   SelectContent,
@@ -11,10 +13,32 @@ import {
 
 const SelectEntity = () => {
   const [entities, setEntities] = useState<Entity[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    axios.get("/api/entity").then((res) => setEntities(res.data));
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("/api/entity");
+        setEntities(response.data);
+        setLoading(false);
+      } catch (err: any) {
+        setError(err);
+        setLoading(false);
+        throw new Error(err);
+      }
+    };
+
+    fetchData();
   }, []);
+
+  if (loading) {
+    return <Skeleton className="w-auto h-8" />;
+  }
+
+  if (error) {
+    return <p className="text-xs text-red-500 ">{error.message}</p>;
+  }
 
   return (
     <>
