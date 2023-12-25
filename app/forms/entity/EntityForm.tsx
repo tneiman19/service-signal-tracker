@@ -4,12 +4,13 @@ import { DeleteButton } from "@/components/DeleteButton";
 import { Button, Input, Label, Textarea } from "@/components/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Entity } from "@prisma/client";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import * as z from "zod";
+import { useFormSubmissionError } from "../../hooks/useFormSubmissionError";
 
 type EntityFormData = z.infer<typeof postEntitySchema>;
 
@@ -23,9 +24,9 @@ const EntityForm = ({ entity }: { entity?: Entity }) => {
   });
 
   const router = useRouter();
-
-  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { setSubmitError, renderErrorAlert } = useFormSubmissionError();
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -36,9 +37,12 @@ const EntityForm = ({ entity }: { entity?: Entity }) => {
       router.push("/");
       router.refresh();
     } catch (error: any) {
-      setIsSubmitting(false);
-      setError(error.response.data.errorMessage);
+      console.log(error);
       toast.error(`Issue saving entity.`);
+      error instanceof AxiosError
+        ? setSubmitError(`${error.code}`, "")
+        : setSubmitError("Error", `Issue saving entity.`);
+      setIsSubmitting(false);
     }
   });
 
@@ -51,7 +55,9 @@ const EntityForm = ({ entity }: { entity?: Entity }) => {
         <h1 className="text-center text-2xl font-semibold text-gray-700 mb-4">
           Entity Form
         </h1>
-        {error && <p className="text-center text-red-500 ">{error}</p>}
+
+        {renderErrorAlert()}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 ">
           <div>
             <Label>Entity Name</Label>
@@ -136,6 +142,7 @@ const EntityForm = ({ entity }: { entity?: Entity }) => {
               delete_name={entity?.entityName!}
               api_url={`/api/entity/${entity?.id}`}
               redirect_url={"/"}
+              handleErrorMessage={setSubmitError}
             />
           )}
           <Button className="max-w-xs col-start-3" disabled={isSubmitting}>
