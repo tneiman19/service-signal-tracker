@@ -5,12 +5,13 @@ import SelectEntity from "@/components/SelectEntity";
 import { Button, Input, Label, Select, Textarea } from "@/components/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Property } from "@prisma/client";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import * as z from "zod";
+import { useFormSubmissionError } from "../../hooks/useFormSubmissionError";
 
 type PropertyFormData = z.infer<typeof postPropertySchema>;
 
@@ -38,9 +39,9 @@ const EntityForm = ({ property }: { property?: Property }) => {
   });
 
   const router = useRouter();
-
-  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { setSubmitError, renderErrorAlert } = useFormSubmissionError();
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -51,8 +52,11 @@ const EntityForm = ({ property }: { property?: Property }) => {
       router.push("/");
       router.refresh();
     } catch (error: any) {
+      console.log(error);
+      error instanceof AxiosError
+        ? setSubmitError(`${error.code}`, "")
+        : setSubmitError("Error", `Issue saving property.`);
       setIsSubmitting(false);
-      setError(error.response.data.errorMessage);
       toast.error(`Issue saving property.`);
     }
   });
@@ -66,7 +70,9 @@ const EntityForm = ({ property }: { property?: Property }) => {
         <h1 className="text-center text-2xl font-semibold text-gray-700 mb-4">
           Property Form
         </h1>
-        {error && <p className="text-center text-red-500 ">{error}</p>}
+
+        {renderErrorAlert()}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 ">
           <div>
             <Label>Property Name</Label>
@@ -161,6 +167,7 @@ const EntityForm = ({ property }: { property?: Property }) => {
               delete_name={property?.propertyName!}
               api_url={`/api/property/${property?.id}`}
               redirect_url={"/"}
+              handleErrorMessage={setSubmitError}
             />
           )}
           <Button className="max-w-xs col-start-3" disabled={isSubmitting}>

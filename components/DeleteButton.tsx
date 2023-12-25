@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
@@ -21,6 +21,7 @@ interface Props {
   delete_name: string;
   api_url: string;
   redirect_url: string;
+  handleErrorMessage: (header: string, message: string) => void;
 }
 
 export function DeleteButton({
@@ -28,19 +29,25 @@ export function DeleteButton({
   delete_name,
   api_url,
   redirect_url,
+  handleErrorMessage,
 }: Props) {
   const router = useRouter();
 
   const handleDelete = async () => {
-    toast.warning(`Deleting ${delete_type}...`);
     try {
       await axios.delete(`${api_url}`);
       toast.success(`${delete_type} deleted successfully.`);
       router.push(`${redirect_url}`);
       router.refresh();
-    } catch (error) {
+    } catch (error: unknown) {
       console.log(error);
       toast.error(`Issue deleting ${delete_type}.`);
+      error instanceof AxiosError
+        ? handleErrorMessage(
+            `${error.code}`,
+            error.response ? `${error.response.data.errorCode}` : ""
+          )
+        : handleErrorMessage("Error", `Issue deleting ${delete_type}.`);
     }
   };
 
