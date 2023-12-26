@@ -52,31 +52,35 @@ model Building {
   property       Property    @relation(fields: [propertyId], references: [id], onUpdate: NoAction)
   equipment      Equipment[]
   units          Unit[]
+
+    @@unique([propertyId, buildingNumber])
 }
 
 model Unit {
-  id              String      @id @default(uuid())
-  propertyId      String
-  buildingId      String
-  unitNumber      String?
-  unitDescription String?     @db.Text
-  active          Boolean     @default(true)
-  contactName     String?
-  contactEmail    String?
-  contactPhone    String?
-  address         String?
-  city            String?
-  state           String?
-  zip             String?
-  equipment       Equipment[]
-  building        Building    @relation(fields: [buildingId], references: [id], onUpdate: NoAction)
-  property        Property    @relation(fields: [propertyId], references: [id], onUpdate: NoAction)
+  id           String      @id @default(uuid())
+  propertyId   String
+  buildingId   String
+  unitNumber   String?
+  unitNote     String?     @db.Text
+  active       Boolean     @default(true)
+  contactName  String?
+  contactEmail String?
+  contactPhone String?
+  address      String?
+  city         String?
+  state        String?
+  zip          String?
+  equipment    Equipment[]
+  building     Building    @relation(fields: [buildingId], references: [id], onUpdate: NoAction)
+  property     Property    @relation(fields: [propertyId], references: [id], onUpdate: NoAction)
+
+    @@unique([propertyId, buildingId, unitNumber])
 }
 
 model EquipmentType {
   id                String      @id @default(uuid())
   equipmentTypeName String      @unique
-  equipmentTypeDesc String?     @db.Text
+  equipmentTypeNote String?     @db.Text
   active            Boolean     @default(true)
   equipment         Equipment[]
 }
@@ -103,7 +107,8 @@ model Equipment {
   serialNumber      String
   warrantyDate      DateTime
   active            Boolean        @default(true)
-  equipmentStatusId String
+  equipmentStatusId Int            @default(1)
+  equipmentNote     String?        @db.Text
   building          Building       @relation(fields: [buildingId], references: [id], onUpdate: NoAction)
   entity            Entity         @relation(fields: [entityId], references: [id], onUpdate: NoAction)
   equipmentStatus   EqipmentStatus @relation(fields: [equipmentStatusId], references: [id], onUpdate: NoAction)
@@ -114,7 +119,7 @@ model Equipment {
 }
 
 model EqipmentStatus {
-  id        String      @id
+  id        Int         @id
   status    String      @unique
   equipment Equipment[]
 }
