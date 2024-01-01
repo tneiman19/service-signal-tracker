@@ -93,3 +93,12 @@ export {
 export { useToast, toast } from "./ui/use-toast";
 
 export { Alert, AlertTitle, AlertDescription } from "./ui/alert";
+
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "./ui/card";
