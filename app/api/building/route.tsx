@@ -5,7 +5,9 @@ import prisma from "@/prisma/client";
 
 export async function GET() {
   try {
-    const buildings = await prisma.building.findMany();
+    const buildings =
+      await prisma.$queryRaw`SELECT b.id, CONCAT(P.propertyName, ' - ', B.buildingNumber) AS buildingWithProperty FROM Building B JOIN Property P ON B.propertyId = P.id ORDER BY P.propertyName, B.buildingNumber`;
+
     return NextResponse.json(buildings, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(formatApiErros(error), { status: 400 });

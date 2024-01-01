@@ -68,19 +68,6 @@ const BuildingForm = ({ building }: { building?: Building }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 ">
           <div>
-            <Label>Building Number</Label>
-            <Input
-              defaultValue={building?.buildingNumber || ""}
-              {...register("buildingNumber")}
-            />
-            {errors.buildingNumber && (
-              <p className="text-center text-red-500 ">
-                {errors.buildingNumber.message}
-              </p>
-            )}
-          </div>
-
-          <div>
             <Label>Property</Label>
             <Controller
               name="propertyId"
@@ -100,6 +87,19 @@ const BuildingForm = ({ building }: { building?: Building }) => {
             {errors.propertyId && (
               <p className="text-center text-red-500 ">
                 {errors.propertyId.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <Label>Building Number</Label>
+            <Input
+              defaultValue={building?.buildingNumber || ""}
+              {...register("buildingNumber")}
+            />
+            {errors.buildingNumber && (
+              <p className="text-center text-red-500 ">
+                {errors.buildingNumber.message}
               </p>
             )}
           </div>
