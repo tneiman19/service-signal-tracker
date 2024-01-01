@@ -20,7 +20,6 @@ model Entity {
   city         String?
   state        String?
   zip          String?
-  equipment    Equipment[]
   properties   Property[]
 }
 
@@ -38,9 +37,7 @@ model Property {
   state        String?
   zip          String?
   buildings    Building[]
-  equipment    Equipment[]
   entity       Entity      @relation(fields: [entityId], references: [id], onUpdate: NoAction)
-  units        Unit[]
 }
 
 model Building {
@@ -50,7 +47,6 @@ model Building {
   buildingNote   String?     @db.Text
   active         Boolean     @default(true)
   property       Property    @relation(fields: [propertyId], references: [id], onUpdate: NoAction)
-  equipment      Equipment[]
   units          Unit[]
 
     @@unique([propertyId, buildingNumber])
@@ -58,7 +54,6 @@ model Building {
 
 model Unit {
   id           String      @id @default(uuid())
-  propertyId   String
   buildingId   String
   unitNumber   String?
   unitNote     String?     @db.Text
@@ -72,9 +67,8 @@ model Unit {
   zip          String?
   equipment    Equipment[]
   building     Building    @relation(fields: [buildingId], references: [id], onUpdate: NoAction)
-  property     Property    @relation(fields: [propertyId], references: [id], onUpdate: NoAction)
 
-    @@unique([propertyId, buildingId, unitNumber])
+    @@unique([buildingId, unitNumber])
 }
 
 model EquipmentType {
@@ -94,9 +88,6 @@ model Manufacturer {
 
 model Equipment {
   id                String         @id @default(uuid())
-  entityId          String
-  propertyId        String
-  buildingId        String
   unitId            String
   equipmentTypeId   String
   manufacturerId    String
@@ -109,16 +100,13 @@ model Equipment {
   active            Boolean        @default(true)
   equipmentStatusId Int            @default(1)
   equipmentNote     String?        @db.Text
-  building          Building       @relation(fields: [buildingId], references: [id], onUpdate: NoAction)
-  entity            Entity         @relation(fields: [entityId], references: [id], onUpdate: NoAction)
-  equipmentStatus   EqipmentStatus @relation(fields: [equipmentStatusId], references: [id], onUpdate: NoAction)
+  equipmentStatus   EquipmentStatus @relation(fields: [equipmentStatusId], references: [id], onUpdate: NoAction)
   equipmentType     EquipmentType  @relation(fields: [equipmentTypeId], references: [id], onUpdate: NoAction)
   manufacturer      Manufacturer   @relation(fields: [manufacturerId], references: [id], onUpdate: NoAction)
-  property          Property       @relation(fields: [propertyId], references: [id], onUpdate: NoAction)
   unit              Unit           @relation(fields: [unitId], references: [id], onUpdate: NoAction)
 }
 
-model EqipmentStatus {
+model EquipmentStatus {
   id        Int         @id
   status    String      @unique
   equipment Equipment[]
