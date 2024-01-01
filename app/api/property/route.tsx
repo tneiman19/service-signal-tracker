@@ -5,7 +5,9 @@ import prisma from "@/prisma/client";
 
 export async function GET() {
   try {
-    const properties = await prisma.property.findMany();
+    const properties = await prisma.property.findMany({
+      orderBy: { propertyName: "asc" },
+    });
     return NextResponse.json(properties, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(formatApiErros(error), { status: 400 });

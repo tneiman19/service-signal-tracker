@@ -5,7 +5,9 @@ import prisma from "@/prisma/client";
 
 export async function GET() {
   try {
-    const entities = await prisma.entity.findMany();
+    const entities = await prisma.entity.findMany({
+      orderBy: { entityName: "asc" },
+    });
     return NextResponse.json(entities, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(formatApiErros(error), { status: 400 });
