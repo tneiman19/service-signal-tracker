@@ -40,17 +40,6 @@ export async function PATCH(
       return NextResponse.json({ message: "Invalid Unit id" }, { status: 404 });
     }
 
-    const property = await prisma.property.findUnique({
-      where: { id: validation.data.propertyId },
-    });
-
-    if (!property) {
-      return NextResponse.json(
-        { message: "Invalid Property id" },
-        { status: 404 }
-      );
-    }
-
     const building = await prisma.building.findUnique({
       where: { id: validation.data.buildingId },
     });
@@ -62,24 +51,10 @@ export async function PATCH(
       );
     }
 
-    const validCombo = await prisma.building.findUnique({
-      where: {
-        id: validation.data.buildingId,
-        propertyId: validation.data.propertyId,
-      },
-    });
-
-    if (!validCombo) {
-      return NextResponse.json(
-        { message: "Invalid building and property combination" },
-        { status: 404 }
-      );
-    }
 
     const unitExists = await prisma.unit.findFirst({
       where: {
         id: { not: params.id },
-        propertyId: validation.data.propertyId,
         buildingId: validation.data.buildingId,
         unitNumber: validation.data.unitNumber,
       },
@@ -89,7 +64,7 @@ export async function PATCH(
       return NextResponse.json(
         {
           message:
-            "A unit already exists with this property, building, and unit combination",
+            "A unit already exists with this building and unit combination",
         },
         { status: 404 }
       );

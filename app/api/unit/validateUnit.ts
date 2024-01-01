@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const postUnitSchema = z.object({
-  propertyId: z.string().uuid("Property ID is required"),
   buildingId: z.string().uuid("Building ID is required"),
   unitNumber: z.string().min(1, "Unit number is required"),
   unitNote: z.string().optional().nullable(),
