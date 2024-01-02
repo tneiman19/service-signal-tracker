@@ -102,3 +102,5 @@ export {
   CardDescription,
   CardContent,
 } from "./ui/card";
+
+export { Switch } from "./ui/switch";
