@@ -1,6 +1,12 @@
 "use client";
 import ActiveToggle from "@/components/ActiveToggle";
-import { Card, CardContent, CardHeader, CardTitle, Label } from "@/components/index";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Label,
+} from "@/components/index";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useFormSubmissionError } from "../../hooks/useFormSubmissionError";
@@ -37,7 +43,8 @@ const EntityInfoPage = () => {
     };
 
     fetchEntityInfo();
-  }, [setSubmitError]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!entityInfo) {
     return (
@@ -119,9 +126,9 @@ const EntityInfoPage = () => {
               <div className="flex pt-1">
                 <Label className="pr-1">Active</Label>
                 <ActiveToggle
-                  recordId={entity.id}
-                  table="entity"
                   active={entity.active}
+                  api={`/api/status_update/entity/${entity.id}`}
+                  type="entity"
                 />
               </div>
             </CardContent>

@@ -17,14 +17,10 @@ export async function PATCH(
   const table = slug[0];
   const id = slug[1];
 
-  switch (table) {
-    case "entity":
-    case "property":
-    case "building":
-    case "unit":
-      return statusUpdate(table, id);
-    default:
-      return NextResponse.json("Invalid Request", { status: 400 });
+  if (["entity", "property", "building", "unit"].includes(table)) {
+    return statusUpdate(table, id);
+  } else {
+    return NextResponse.json("Invalid Request", { status: 400 });
   }
 }
 
