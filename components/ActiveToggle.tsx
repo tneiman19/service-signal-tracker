@@ -3,44 +3,27 @@ import { Switch } from "@/components/index";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-type TableToApiMap = {
-  [key: string]: string;
-};
-
 const ActiveToggle = ({
-  recordId,
-  table,
   active,
+  api,
+  type,
 }: {
-  recordId: string;
-  table: string;
   active: boolean;
+  api: string;
+  type: string;
 }) => {
   const handleSwitchClick = async () => {
     try {
-      const tableToApiMap: TableToApiMap = {
-        entity: `/api/status_update/entity/${recordId}`,
-        property: `/api/status_update/property/${recordId}`,
-        building: `/api/status_update/building/${recordId}`,
-        unit: `/api/status_update/unit/${recordId}`,
-      };
-
-      const api = tableToApiMap[table];
-      console.log(api);
       await axios.patch(api);
-      toast.success(`Updated ${table} successfully.`);
+      toast.success(`Updated ${type} successfully.`);
     } catch (error) {
-      toast.error(`Error updating ${table}.`);
+      toast.error(`Error updating ${type}.`);
     }
   };
 
   return (
     <div>
-      <Switch
-        name="active"
-        defaultChecked={active}
-        onClick={handleSwitchClick}
-      />
+      <Switch defaultChecked={active} onClick={handleSwitchClick} />
     </div>
   );
 };
