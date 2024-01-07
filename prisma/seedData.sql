@@ -1,10 +1,10 @@
-DELETE FROM Unit;
-DELETE FROM Building;
-DELETE FROM Property;
-DELETE FROM Entity;
+DELETE FROM "Unit";
+DELETE FROM "Building";
+DELETE FROM "Property";
+DELETE FROM "Entity";
 
 
-INSERT INTO Entity (id, entityName, entityNote, contactName, contactEmail, contactPhone, address, city, state, zip)
+INSERT INTO "Entity" ("id", "entityName", "entityNote", "contactName", "contactEmail", "contactPhone", "address", "city", "state", "zip")
 VALUES
 ('123e4567-e89b-12d3-a456-426614174000', 'Entity One', 'Note about Entity One', 'John Doe', 'john.doe@example.com', '555-1234', '1234 Main St', 'Anytown', 'CA', '90210'),
 ('123e4567-e89b-12d3-a456-426614174001', 'Entity Two', 'Note about Entity Two', 'Jane Smith', 'jane.smith@example.com', '555-5678', '5678 Second St', 'Othertown', 'NY', '10001'),
@@ -12,7 +12,7 @@ VALUES
 ('123e4567-e89b-12d3-a456-426614174003', 'Entity Four', 'Note about Entity Four', 'Bob Williams', 'bob.williams@example.com', '555-3456', '3456 Fourth Blvd', 'Somecity', 'FL', '33101');
 
 
-INSERT INTO Property (id, entityId, propertyName, propertyNote, contactName, contactEmail, contactPhone, address, city, state, zip)
+INSERT INTO "Property" ("id", "entityId", "propertyName", "propertyNote", "contactName", "contactEmail", "contactPhone", "address", "city", "state", "zip")
 VALUES
 ('001e4567-e89b-12d3-a456-426614174000', '123e4567-e89b-12d3-a456-426614174000', 'Property One-A', 'Note for Property One-A', 'Sam Taylor', 'sam.taylor@example.com', '555-0001', '1001 First St', 'Anytown', 'CA', '90210'),
 ('002e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174000', 'Property One-B', 'Note for Property One-B', 'Alex Kim', 'alex.kim@example.com', '555-0002', '1002 Second St', 'Anytown', 'CA', '90210'),
@@ -35,7 +35,7 @@ VALUES
 ('013e4567-e89b-12d3-a456-426614174012', '123e4567-e89b-12d3-a456-426614174003', 'Property Four-D', 'Note for Property Four-D', 'Pamela Day', 'pamela.day@example.com', '555-3004', '4004 Nineteenth St', 'Somecity', 'FL', '33101'),
 ('014e4567-e89b-12d3-a456-426614174013', '123e4567-e89b-12d3-a456-426614174003', 'Property Four-E', 'Note for Property Four-E', 'Quinn Earl', 'quinn.earl@example.com', '555-3005', '4005 Twentieth Ave', 'Somecity', 'FL', '33101');
 
-INSERT INTO Building (id, propertyId, buildingNumber, buildingNote)
+INSERT INTO "Building" ("id", "propertyId", "buildingNumber", "buildingNote")
 VALUES
 ('b101e4567-e89b-12d3-a456-426614174000', '001e4567-e89b-12d3-a456-426614174000', '1', 'Building 1 of Property One-A'),
 ('b102e4567-e89b-12d3-a456-426614174001', '001e4567-e89b-12d3-a456-426614174000', '2', 'Building 2 of Property One-A'),
@@ -113,7 +113,7 @@ VALUES
 ('b14be4567-e89b-12d3-a456-426614174049', '00fe4567-e89b-12d3-a456-42661417400e', '4', 'Building 4 of Property Three-E'),
 ('b14ce4567-e89b-12d3-a456-42661417404a', '00fe4567-e89b-12d3-a456-42661417400e', '5', 'Building 5 of Property Three-E');
 
-INSERT INTO Unit (id, buildingId, unitNumber, contactName, contactEmail, contactPhone, address, city, state, zip, unitNote)
+INSERT INTO "Unit" ("id", "buildingId", "unitNumber", "contactName", "contactEmail", "contactPhone", "address", "city", "state", "zip", "unitNote")
 VALUES
 ('u101e4567-e89b-12d3-a456-426614174000', 'b101e4567-e89b-12d3-a456-426614174000', '1', 'John Doe', 'john.doe@example.com', '555-1000', '101 Main St', 'City1', 'State1', '10001', 'Unit 1 Note'),
 ('u102e4567-e89b-12d3-a456-426614174001', 'b101e4567-e89b-12d3-a456-426614174000', '2', 'Jane Smith', 'jane.smith@example.com', '555-2000', '102 Main St', 'City1', 'State1', '10001', 'Unit 2 Note'),
