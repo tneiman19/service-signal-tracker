@@ -1,6 +1,11 @@
 "use client";
 import ActiveToggle from "@/components/ActiveToggle";
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -8,6 +13,7 @@ import {
   Label,
 } from "@/components/index";
 import axios from "axios";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useFormSubmissionError } from "../../hooks/useFormSubmissionError";
 
@@ -65,72 +71,94 @@ const EntityInfoPage = () => {
           <Card key={entity.id}>
             <CardHeader>
               <CardTitle className="text-center hover:cursor-pointer">
-                {entity.entityName}
+                <Link href={`/forms/entity/edit/${entity.id}`}>
+                  {entity.entityName}
+                </Link>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <section>
-                <h2 className="font-semibold p-1">Contact Info</h2>
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="contact">
+                  <AccordionTrigger>Contact Info</AccordionTrigger>
+                  <AccordionContent>
+                    <p className="font-thin">
+                      Name: <span>{entity.contactName}</span>
+                    </p>
+                    <p className="font-thin">
+                      Phone: <span>{entity.contactPhone}</span>
+                    </p>
+                    <p className="font-thin">
+                      Email:{" "}
+                      <span className="hover:cursor-pointer">
+                        <a
+                          href={`mailto:${entity.contactEmail}`}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          {entity.contactEmail}
+                        </a>
+                      </span>
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
 
-                <p className="font-thin">
-                  Name: <span>{entity.contactName}</span>
-                </p>
-                <p className="font-thin">
-                  Phone: <span>{entity.contactPhone}</span>
-                </p>
-                <p className="font-thin">
-                  Email:{" "}
-                  <span className="hover:cursor-pointer">
-                    <a
-                      href={`mailto:${entity.contactEmail}`}
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      {entity.contactEmail}
-                    </a>
-                  </span>
-                </p>
+                <AccordionItem value="address">
+                  <AccordionTrigger>Address Info</AccordionTrigger>
+                  <AccordionContent>
+                    <p className="font-thin">
+                      Address: <span>{entity.address}</span>
+                    </p>
+                    <p className="font-thin">
+                      City: <span>{entity.city}</span>
+                    </p>
+                    <p className="font-thin">
+                      State: <span>{entity.state}</span>
+                    </p>
+                    <p className="font-thin">
+                      Zip: <span>{entity.zip}</span>
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="assets">
+                  <AccordionTrigger>Assets</AccordionTrigger>
+                  <AccordionContent>
+                    <p className="font-thin">
+                      Properties: <span>{entity.propertyCount}</span>
+                    </p>
+                    <p className="font-thin">
+                      Buildings: <span> {entity.buildingCount}</span>
+                    </p>
+                    <p className="font-thin">
+                      Units: <span>{entity.unitCount}</span>
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="other">
+                  <AccordionTrigger>Other</AccordionTrigger>
+                  <AccordionContent>
+                    <p className="font-thin">
+                      Notes: <span>{entity.entityNote}</span>
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+
+              <section className="flex justify-between pt-5">
+                <Link href={`/forms/entity/edit/${entity.id}`}>
+                  {" "}
+                  <Button>Edit</Button>
+                </Link>
+
+                <div className="flex">
+                  <Label className="pr-2 pt-1">Active</Label>
+                  <ActiveToggle
+                    active={entity.active}
+                    api={`/api/status_update/entity/${entity.id}`}
+                    type="entity"
+                  />
+                </div>
               </section>
-
-              <section>
-                <h2 className="font-semibold p-1">Address</h2>
-
-                <p className="font-thin">
-                  Address: <span>{entity.address}</span>
-                </p>
-                <p className="font-thin">
-                  City State Zip:{" "}
-                  <span>
-                    {entity.city} {entity.city ? "," : ""} {entity.state}{" "}
-                    {entity.zip}
-                  </span>
-                </p>
-              </section>
-
-              <section>
-                <h2 className="font-semibold p-1">Other</h2>
-
-                <p className="font-thin">
-                  Properties: <span>{entity.propertyCount}</span>
-                </p>
-                <p className="font-thin">
-                  Buildings: <span> {entity.buildingCount}</span>
-                </p>
-                <p className="font-thin">
-                  Units: <span>{entity.unitCount}</span>
-                </p>
-                <p className="font-thin">
-                  Notes: <span>{entity.entityNote}</span>
-                </p>
-              </section>
-
-              <div className="flex pt-1">
-                <Label className="pr-1">Active</Label>
-                <ActiveToggle
-                  active={entity.active}
-                  api={`/api/status_update/entity/${entity.id}`}
-                  type="entity"
-                />
-              </div>
             </CardContent>
           </Card>
         ))}

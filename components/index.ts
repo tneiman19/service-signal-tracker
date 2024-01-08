@@ -104,3 +104,10 @@ export {
 } from "./ui/card";
 
 export { Switch } from "./ui/switch";
+
+export {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "./ui/accordion";
