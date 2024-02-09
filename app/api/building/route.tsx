@@ -5,8 +5,20 @@ import prisma from "@/prisma/client";
 
 export async function GET() {
   try {
-    const buildings =
-      await prisma.$queryRaw`SELECT b.id, CONCAT(P.propertyName, ' - ', B.buildingNumber) AS buildingWithProperty FROM Building B JOIN Property P ON B.propertyId = P.id ORDER BY P.propertyName, B.buildingNumber`;
+    const buildings = await prisma.$queryRaw`
+  select
+	b.id,
+	concat(p."propertyName",
+	' - ',
+	b."buildingNumber") as buildingWithProperty
+from
+	"Building" b
+join "Property" p
+on
+	b."propertyId" = p.id
+order by
+	p."propertyName",
+	b."buildingNumber"`;
 
     return NextResponse.json(buildings, { status: 200 });
   } catch (error: any) {
