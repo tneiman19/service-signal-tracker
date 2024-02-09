@@ -5,6 +5,8 @@ import "../app/styles/globals.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import Footer from "./Footer";
+import NavBar from "./NavBar";
 
 export const fontSans = FontSans({
   subsets: ["latin"],
@@ -45,8 +47,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
               pauseOnHover
               theme="colored"
             />
+            <NavBar/>
             {children}
           </main>
+          <Footer/>
         </ThemeProvider>
       </body>
     </html>
