@@ -33,6 +33,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const propertyExists = await prisma.property.findFirst({
+      where: {
+        entityId: validation.data.entityId,
+        propertyName: validation.data.propertyName,
+      },
+    });
+
+    if (propertyExists) {
+      return NextResponse.json(
+        {
+          message:
+            "A property already exists with this name and entity combination",
+        },
+        { status: 404 }
+      );
+    }
+
     const newProperty = await prisma.property.create({ data: validation.data });
     return NextResponse.json(newProperty, { status: 201 });
   } catch (error: unknown) {
