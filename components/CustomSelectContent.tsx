@@ -1,7 +1,6 @@
 "use client";
 
 import { SelectContent, SelectItem } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
@@ -36,11 +35,23 @@ const CustomSelectContent: React.FC<SelectProps> = ({ api }) => {
   }, [api]);
 
   if (loading) {
-    return <Skeleton className="w-auto h-8" />;
+    return (
+      <SelectContent>
+        <SelectItem value="loading" disabled>
+          Loading...
+        </SelectItem>
+      </SelectContent>
+    );
   }
 
   if (error) {
-    return <p className="text-xs text-red-500 ">{error.message}</p>;
+    return (
+      <SelectContent>
+        <SelectItem value="error" disabled>
+          Error loading options...
+        </SelectItem>
+      </SelectContent>
+    );
   }
 
   return (
