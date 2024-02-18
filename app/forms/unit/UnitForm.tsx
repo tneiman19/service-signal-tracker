@@ -179,17 +179,14 @@ const UnitForm = ({ unit }: { unit?: Unit }) => {
           <FormField
             control={form.control}
             name="state"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormLabel>State</FormLabel>
-                  <FormControl>
-                    <Input placeholder="State" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
+            render={({ field }) => (
+              <CustomSelect
+                api="/api/select_option_list/state"
+                label="State"
+                placeholder="Select a state"
+                field={field}
+              />
+            )}
           />
           <FormField
             control={form.control}
