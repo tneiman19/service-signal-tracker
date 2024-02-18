@@ -12,6 +12,10 @@ export async function GET(
   const foreignId = slug[2];
 
   switch (true) {
+    case queryTable === "entity" &&
+      foreignTable === undefined &&
+      foreignId === undefined:
+      return selectAllEntities();
     case queryTable === "unit" &&
       foreignTable === "building" &&
       foreignId !== undefined:
@@ -28,6 +32,22 @@ export async function GET(
       );
   }
 }
+
+const selectAllEntities = async () => {
+  try {
+    const list = await prisma.$queryRaw`
+select
+	e.id as id,
+	ltrim(rtrim(e."entityName")) as value
+from
+	"Entity" e
+order by
+	e."entityName"`;
+    return NextResponse.json(list, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(formatApiErros(error), { status: 400 });
+  }
+};
 
 const selectAllBuildings = async () => {
   try {
