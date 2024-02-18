@@ -110,3 +110,9 @@ model EquipmentStatus {
   status    String      @unique
   equipment Equipment[]
 }
+
+model State {
+  abbreviation String @id @unique @db.VarChar(2)
+  name         String @unique
+}
+
