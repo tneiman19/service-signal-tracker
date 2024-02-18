@@ -12,6 +12,8 @@ export async function GET(
   const foreignId = slug[2];
 
   switch (true) {
+    case queryTable === "state":
+      return selectStates();
     case queryTable === "entity" &&
       foreignTable === undefined &&
       foreignId === undefined:
@@ -32,6 +34,22 @@ export async function GET(
       );
   }
 }
+
+const selectStates = async () => {
+  try {
+    const list = await prisma.$queryRaw`
+select
+	ltrim(rtrim(s."abbreviation")) as id,
+	ltrim(rtrim(s."name")) as value
+from
+	"State" s
+order by
+	"name"`;
+    return NextResponse.json(list, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(formatApiErros(error), { status: 400 });
+  }
+};
 
 const selectAllEntities = async () => {
   try {
