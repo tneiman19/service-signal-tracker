@@ -1,7 +1,17 @@
 "use client";
+
 import { postEntitySchema } from "@/app/api/entity/validateEntity";
+import CustomSelect from "@/components/CustomSelect";
 import { DeleteButton } from "@/components/DeleteButton";
-import { Button, Input, Label, Textarea } from "@/components/index";
+import { Button, Input, Textarea } from "@/components/index";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Entity } from "@prisma/client";
 import axios, { AxiosError } from "axios";
@@ -12,23 +22,29 @@ import { toast } from "react-toastify";
 import * as z from "zod";
 import { useFormSubmissionError } from "../../hooks/useFormSubmissionError";
 
-type EntityFormData = z.infer<typeof postEntitySchema>;
+const FormSchema = postEntitySchema;
 
 const EntityForm = ({ entity }: { entity?: Entity }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<EntityFormData>({
-    resolver: zodResolver(postEntitySchema),
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      entityName: entity?.entityName || "",
+      entityNote: entity?.entityNote || "",
+      contactName: entity?.contactName || "",
+      contactEmail: entity?.contactEmail || "",
+      contactPhone: entity?.contactPhone || "",
+      address: entity?.address || "",
+      city: entity?.city || "",
+      state: entity?.state || "",
+      zip: entity?.zip || "",
+    },
   });
 
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const { setSubmitError, renderErrorAlert } = useFormSubmissionError();
 
-  const onSubmit = handleSubmit(async (data) => {
+  async function handleSubmit(data: z.infer<typeof FormSchema>) {
     try {
       setIsSubmitting(true);
       if (entity) await axios.patch(`/api/entity/${entity.id}`, data);
@@ -40,101 +56,160 @@ const EntityForm = ({ entity }: { entity?: Entity }) => {
       console.log(error);
       toast.error(`Issue saving entity.`);
       error instanceof AxiosError
-        ? setSubmitError(`${error.code}`, "")
-        : setSubmitError("Error", `Issue saving entity.`);
+        ? setSubmitError(`${error.message}`, `${error.response?.data.message}`)
+        : setSubmitError("Error", `Issue saving unit.`);
       setIsSubmitting(false);
     }
-  });
+  }
 
   return (
-    <>
+    <Form {...form}>
       <form
-        onSubmit={onSubmit}
+        onSubmit={form.handleSubmit(handleSubmit)}
         className="p-4 mx-auto md:max-w-xl sm:max-w-sm border border-gray-300 rounded-lg shadow-sm"
       >
         <h1 className="text-center text-2xl font-semibold text-gray-700 mb-4">
-          Entity Form
+          Entity Form{" "}
         </h1>
-
         {renderErrorAlert()}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 ">
-          <div>
-            <Label>Entity Name</Label>
-            <Input
-              defaultValue={entity?.entityName}
-              {...register("entityName")}
-            />
-            {errors && (
-              <p className="text-center text-red-500 ">
-                {errors.entityName?.message}
-              </p>
+          <FormField
+            control={form.control}
+            name="entityName"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Entity Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Entity Name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name="contactName"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Contact Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Contact Name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name="contactPhone"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Contact Phone</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Contact Phone" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name="contactEmail"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Contact Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Contact Email" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Unit Address</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Address" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>City</FormLabel>
+                  <FormControl>
+                    <Input placeholder="City" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name="state"
+            render={({ field }) => (
+              <CustomSelect
+                api="/api/select_option_list/state"
+                label="State"
+                placeholder="Select a state"
+                field={field}
+              />
             )}
-          </div>
-
-          <div>
-            <Label>Contact Name</Label>
-            <Input
-              defaultValue={entity?.contactName || undefined}
-              {...register("contactName")}
-            />
-            {errors.contactName && <p>{errors.contactName.message}</p>}
-          </div>
-
-          <div>
-            <Label>Contact Email</Label>
-            <Input
-              defaultValue={entity?.contactEmail || ""}
-              {...register("contactEmail")}
-            />
-            {errors.contactEmail && <p>{errors.contactEmail.message}</p>}
-          </div>
-
-          <div>
-            <Label>Contact Phone</Label>
-            <Input
-              defaultValue={entity?.contactPhone || ""}
-              {...register("contactPhone")}
-            />
-            {errors.contactPhone && <p>{errors.contactPhone.message}</p>}
-          </div>
-
-          <div>
-            <Label>Address</Label>
-            <Input
-              defaultValue={entity?.address || ""}
-              {...register("address")}
-            />
-            {errors.address && <p>{errors.address.message}</p>}
-          </div>
-
-          <div>
-            <Label>City</Label>
-            <Input defaultValue={entity?.city || ""} {...register("city")} />
-            {errors.city && <p>{errors.city.message}</p>}
-          </div>
-
-          <div>
-            <Label>State</Label>
-            <Input defaultValue={entity?.state || ""} {...register("state")} />
-            {errors.state && <p>{errors.state.message}</p>}
-          </div>
-
-          <div>
-            <Label>Zip Code</Label>
-            <Input defaultValue={entity?.zip || ""} {...register("zip")} />
-            {errors.zip && <p>{errors.zip.message}</p>}
-          </div>
-        </div>
-
-        <div className="gap-4 p-4">
-          <Label>Entity Notes </Label>
-
-          <Textarea
-            defaultValue={entity?.entityNote || ""}
-            {...register("entityNote")}
+          />
+          <FormField
+            control={form.control}
+            name="zip"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Zip Code</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Zip Code" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
         </div>
+        <div className="gap-4 p-4">
+          <FormField
+            control={form.control}
+            name="entityNote"
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>Entity Note</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Entity Note " {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+        </div>
+
         <div className="grid lg:grid-cols-3 gap-4 p-4">
           {entity?.id && (
             <DeleteButton
@@ -145,12 +220,16 @@ const EntityForm = ({ entity }: { entity?: Entity }) => {
               handleErrorMessage={setSubmitError}
             />
           )}
-          <Button className="max-w-xs col-start-3" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            className="max-w-xs col-start-3"
+            disabled={isSubmitting}
+          >
             {entity ? "Update Entity" : "Register Entity"}{" "}
           </Button>
         </div>
       </form>
-    </>
+    </Form>
   );
 };
 

@@ -45,6 +45,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const buildingExists = await prisma.building.findFirst({
+      where: {
+        propertyId: validation.data.propertyId,
+        buildingNumber: validation.data.buildingNumber,
+      },
+    });
+
+    if (buildingExists) {
+      return NextResponse.json(
+        {
+          message:
+            "A building already exists with this property and building combination",
+        },
+        { status: 404 }
+      );
+    }
+
     const newBuilding = await prisma.building.create({ data: validation.data });
     return NextResponse.json(newBuilding, { status: 201 });
   } catch (error: unknown) {
