@@ -18,6 +18,10 @@ export async function GET(
       foreignTable === undefined &&
       foreignId === undefined:
       return selectAllEntities();
+    case queryTable === "property" &&
+      foreignTable === undefined &&
+      foreignId === undefined:
+      return selectAllProperties();
     case queryTable === "unit" &&
       foreignTable === "building" &&
       foreignId !== undefined:
@@ -61,6 +65,22 @@ from
 	"Entity" e
 order by
 	e."entityName"`;
+    return NextResponse.json(list, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(formatApiErros(error), { status: 400 });
+  }
+};
+
+const selectAllProperties = async () => {
+  try {
+    const list = await prisma.$queryRaw`
+select
+	p.id as id,
+	ltrim(rtrim(p."propertyName")) as value
+from
+	"Property" p
+order by
+	p."propertyName"`;
     return NextResponse.json(list, { status: 200 });
   } catch (error) {
     return NextResponse.json(formatApiErros(error), { status: 400 });
