@@ -20,6 +20,21 @@ export async function POST(request: NextRequest) {
   if (!validation.success)
     return NextResponse.json(validation.error.format(), { status: 400 });
 
+  const entityExists = await prisma.entity.findFirst({
+    where: {
+      entityName: validation.data.entityName,
+    },
+  });
+
+  if (entityExists) {
+    return NextResponse.json(
+      {
+        message: "An entity already exists with this name.",
+      },
+      { status: 404 }
+    );
+  }
+
   try {
     const newEntity = await prisma.entity.create({ data: validation.data });
 
