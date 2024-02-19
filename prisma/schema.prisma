@@ -3,15 +3,15 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Entity {
-  id           String      @id @default(uuid())
-  entityName   String      @unique
+  id           String     @id @default(uuid())
+  entityName   String     @unique
   entityNote   String?
-  active       Boolean     @default(true)
+  active       Boolean    @default(true)
   contactName  String?
   contactEmail String?
   contactPhone String?
@@ -23,11 +23,11 @@ model Entity {
 }
 
 model Property {
-  id           String      @id @default(uuid())
+  id           String     @id @default(uuid())
   entityId     String
-  propertyName String      @unique
-  propertyNote String?     @db.Text
-  active       Boolean     @default(true)
+  propertyName String     @unique
+  propertyNote String?    @db.Text
+  active       Boolean    @default(true)
   contactName  String?
   contactEmail String?
   contactPhone String?
@@ -36,19 +36,19 @@ model Property {
   state        String?
   zip          String?
   buildings    Building[]
-  entity       Entity      @relation(fields: [entityId], references: [id], onUpdate: NoAction)
+  entity       Entity     @relation(fields: [entityId], references: [id], onUpdate: NoAction)
 }
 
 model Building {
-  id             String      @id @default(uuid())
+  id             String   @id @default(uuid())
   propertyId     String
   buildingNumber String?
-  buildingNote   String?     @db.Text
-  active         Boolean     @default(true)
-  property       Property    @relation(fields: [propertyId], references: [id], onUpdate: NoAction)
+  buildingNote   String?  @db.Text
+  active         Boolean  @default(true)
+  property       Property @relation(fields: [propertyId], references: [id], onUpdate: NoAction)
   units          Unit[]
 
-    @@unique([propertyId, buildingNumber])
+  @@unique([propertyId, buildingNumber])
 }
 
 model Unit {
@@ -67,7 +67,7 @@ model Unit {
   equipment    Equipment[]
   building     Building    @relation(fields: [buildingId], references: [id], onUpdate: NoAction)
 
-    @@unique([buildingId, unitNumber])
+  @@unique([buildingId, unitNumber])
 }
 
 model EquipmentType {
@@ -86,23 +86,23 @@ model Manufacturer {
 }
 
 model Equipment {
-  id                String         @id @default(uuid())
-  unitId            String
+  id                String          @id @default(uuid())
+  unitId            String?
   equipmentTypeId   String
-  manufacturerId    String
-  purchaseDate      DateTime
-  purchasePrice     Float
-  purchasedFrom     String
-  modelNumber       String
-  serialNumber      String
-  warrantyDate      DateTime
-  active            Boolean        @default(true)
-  equipmentStatusId Int            @default(1)
-  equipmentNote     String?        @db.Text
+  manufacturerId    String?
+  purchaseDate      DateTime?
+  purchasePrice     Float?
+  purchasedFrom     String?
+  modelNumber       String?
+  serialNumber      String?
+  warrantyDate      DateTime?
+  active            Boolean         @default(true)
+  equipmentStatusId Int             @default(1)
+  equipmentNote     String?         @db.Text
   equipmentStatus   EquipmentStatus @relation(fields: [equipmentStatusId], references: [id], onUpdate: NoAction)
-  equipmentType     EquipmentType  @relation(fields: [equipmentTypeId], references: [id], onUpdate: NoAction)
-  manufacturer      Manufacturer   @relation(fields: [manufacturerId], references: [id], onUpdate: NoAction)
-  unit              Unit           @relation(fields: [unitId], references: [id], onUpdate: NoAction)
+  equipmentType     EquipmentType   @relation(fields: [equipmentTypeId], references: [id], onUpdate: NoAction)
+  manufacturer      Manufacturer?   @relation(fields: [manufacturerId], references: [id], onUpdate: NoAction)
+  unit              Unit?           @relation(fields: [unitId], references: [id], onUpdate: NoAction)
 }
 
 model EquipmentStatus {
@@ -115,4 +115,3 @@ model State {
   abbreviation String @id @unique @db.VarChar(2)
   name         String @unique
 }
-
