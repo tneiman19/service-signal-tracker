@@ -1,7 +1,10 @@
 import { z } from "zod";
 
 export const postPropertySchema = z.object({
-  entityId: z.string().uuid("Entity ID is required"),
+  entityId: z
+    .string()
+    .min(1, "Entity ID is required")
+    .uuid({ message: "Invalid UUID" }),
   propertyName: z.string().min(1, "Property name is required"),
   propertyNote: z.string().optional(),
   contactName: z.string().optional(),
