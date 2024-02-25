@@ -1,7 +1,10 @@
 import { z } from "zod";
 
 export const postUnitSchema = z.object({
-  buildingId: z.string().uuid(1, "Building ID is required"),
+  buildingId: z
+    .string()
+    .min(1, "Building ID is required")
+    .uuid({ message: "Invalid UUID" }),
   unitNumber: z.string().min(1, "Unit number is required"),
   unitNote: z.string().optional(),
   contactName: z.string().optional(),
