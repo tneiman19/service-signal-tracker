@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Entity {
-  id           String     @id @default(uuid())
+  id           String     @id @default(uuid()) @db.Uuid
   entityName   String     @unique
   entityNote   String?
   active       Boolean    @default(true)
@@ -23,8 +23,8 @@ model Entity {
 }
 
 model Property {
-  id           String     @id @default(uuid())
-  entityId     String
+  id           String     @id @default(uuid()) @db.Uuid
+  entityId     String     @db.Uuid
   propertyName String     @unique
   propertyNote String?    @db.Text
   active       Boolean    @default(true)
@@ -40,8 +40,8 @@ model Property {
 }
 
 model Building {
-  id             String   @id @default(uuid())
-  propertyId     String
+  id             String   @id @default(uuid()) @db.Uuid
+  propertyId     String   @db.Uuid
   buildingNumber String?
   buildingNote   String?  @db.Text
   active         Boolean  @default(true)
@@ -52,8 +52,8 @@ model Building {
 }
 
 model Unit {
-  id           String      @id @default(uuid())
-  buildingId   String
+  id           String      @id @default(uuid()) @db.Uuid
+  buildingId   String      @db.Uuid
   unitNumber   String?
   unitNote     String?     @db.Text
   active       Boolean     @default(true)
@@ -71,38 +71,40 @@ model Unit {
 }
 
 model EquipmentType {
-  id                String      @id @default(uuid())
-  equipmentTypeName String      @unique
-  equipmentTypeNote String?     @db.Text
-  active            Boolean     @default(true)
-  equipment         Equipment[]
+  id                   String                 @id @default(uuid()) @db.Uuid
+  equipmentTypeName    String                 @unique
+  equipmentTypeNote    String?                @db.Text
+  active               Boolean                @default(true)
+  equipment            Equipment[]
+  ServiceTicketOptions ServiceTicketOptions[]
 }
 
 model Manufacturer {
-  id               String      @id @default(uuid())
+  id               String      @id @default(uuid()) @db.Uuid
   manufacturerName String      @unique
   active           Boolean     @default(true)
   equipment        Equipment[]
 }
 
 model Equipment {
-  id                String          @id @default(uuid())
-  unitId            String?
-  equipmentTypeId   String
-  manufacturerId    String?
+  id                String                @id @default(uuid()) @db.Uuid
+  unitId            String?               @db.Uuid
+  equipmentTypeId   String                @db.Uuid
+  manufacturerId    String?               @db.Uuid
   purchaseDate      DateTime?
   purchasePrice     Float?
   purchasedFrom     String?
   modelNumber       String?
   serialNumber      String?
   warrantyDate      DateTime?
-  active            Boolean         @default(true)
-  equipmentStatusId Int             @default(1)
-  equipmentNote     String?         @db.Text
-  equipmentStatus   EquipmentStatus @relation(fields: [equipmentStatusId], references: [id], onUpdate: NoAction)
-  equipmentType     EquipmentType   @relation(fields: [equipmentTypeId], references: [id], onUpdate: NoAction)
-  manufacturer      Manufacturer?   @relation(fields: [manufacturerId], references: [id], onUpdate: NoAction)
-  unit              Unit?           @relation(fields: [unitId], references: [id], onUpdate: NoAction)
+  active            Boolean               @default(true)
+  equipmentStatusId Int                   @default(1)
+  equipmentNote     String?               @db.Text
+  equipmentStatus   EquipmentStatus       @relation(fields: [equipmentStatusId], references: [id], onUpdate: NoAction)
+  equipmentType     EquipmentType         @relation(fields: [equipmentTypeId], references: [id], onUpdate: NoAction)
+  manufacturer      Manufacturer?         @relation(fields: [manufacturerId], references: [id], onUpdate: NoAction)
+  unit              Unit?                 @relation(fields: [unitId], references: [id], onUpdate: NoAction)
+  serviceTickets    ServiceTicketHeader[]
 }
 
 model EquipmentStatus {
@@ -114,4 +116,62 @@ model EquipmentStatus {
 model State {
   abbreviation String @id @unique @db.VarChar(2)
   name         String @unique
+}
+
+model ServiceStatus {
+  id      Int                   @id
+  status  String                @unique
+  tickets ServiceTicketHeader[]
+}
+
+model ServiceVendor {
+  id                     String                @id @default(uuid()) @db.Uuid
+  vendorName             String                @unique
+  active                 Boolean               @default(true)
+  contactName            String?
+  contactEmail           String?
+  contactPhone           String?
+  address                String?
+  city                   String?
+  state                  String?
+  zip                    String?
+  serviceTicketsAssigned ServiceTicketHeader[]
+}
+
+model ServiceTicketOptions {
+  id                String                @id @default(uuid()) @db.Uuid
+  equipmentTypeId   String                @db.Uuid
+  description       String
+  active            Boolean               @default(true)
+  equipmentType     EquipmentType         @relation(fields: [equipmentTypeId], references: [id], onUpdate: NoAction)
+  ticketsWithOption ServiceTicketDetail[]
+
+  @@unique([equipmentTypeId, description])
+}
+
+model ServiceTicketHeader {
+  id              String                @id @default(uuid()) @db.Uuid
+  ticketNumber    Int                   @default(autoincrement())
+  ticketOpenDate  DateTime              @default(now())
+  ticketCloseDate DateTime?
+  ticketNote      String?
+  serviceStatusId Int                   @default(1)
+  equipmentId     String                @db.Uuid
+  vendorId        String?               @db.Uuid
+  serviceStatus   ServiceStatus         @relation(fields: [serviceStatusId], references: [id], onUpdate: NoAction)
+  equipment       Equipment             @relation(fields: [equipmentId], references: [id], onUpdate: NoAction)
+  vendor          ServiceVendor?        @relation(fields: [vendorId], references: [id], onUpdate: NoAction)
+  details         ServiceTicketDetail[]
+}
+
+model ServiceTicketDetail {
+  id              String               @id @default(uuid())
+  ticketId        String               @db.Uuid
+  serviceOptionId String               @db.Uuid
+  completed       Boolean              @default(false)
+  detailNote      String?
+  ticket          ServiceTicketHeader  @relation(fields: [ticketId], references: [id], onUpdate: NoAction)
+  serviceOption   ServiceTicketOptions @relation(fields: [serviceOptionId], references: [id], onUpdate: NoAction)
+
+  @@unique([ticketId, serviceOptionId])
 }
