@@ -4,6 +4,7 @@ import prisma from "@/prisma/client";
 
 export async function GET(
   request: NextRequest,
+
   { params }: { params: { slug: string[] } }
 ) {
   const { slug } = params;
@@ -30,6 +31,16 @@ export async function GET(
       foreignTable === undefined &&
       foreignId === undefined:
       return selectAllBuildings();
+    case queryTable === "equipmentStatus":
+      return selectAllEqipmentStatus();
+    case queryTable === "serviceStatus":
+      return selectAllServiceStatus();
+    case queryTable === "equipmentType":
+      return selectAllEqipmentTypes();
+    case queryTable === "serviceTicketOptions" &&
+      foreignTable === "x" &&
+      foreignId !== undefined:
+      return selectServiceTicketItemsByEquipmentTypeId(foreignId);
     // Add more cases here if needed for other conditions
     default:
       return NextResponse.json(
@@ -90,19 +101,88 @@ order by
 const selectAllBuildings = async () => {
   try {
     const list = await prisma.$queryRaw`
+    select
+    	b.id as id,
+    	concat('Building ',
+    	b."buildingNumber",
+    	' @ ',
+    	ltrim(rtrim(p."propertyName"))) as value
+    from
+    	"Building" b
+    join "Property" p on
+    	p.id = b."propertyId"
+    order by
+    	p."propertyName",
+    	b."buildingNumber"`;
+    return NextResponse.json(list, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(formatApiErros(error), { status: 400 });
+  }
+};
+
+const selectAllEqipmentStatus = async () => {
+  try {
+    const list = await prisma.$queryRaw`
+    select
+    	id,
+    	ltrim(rtrim(status)) as value
+    from
+    	"EquipmentStatus"
+    order by
+    	status`;
+    return NextResponse.json(list, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(formatApiErros(error), { status: 400 });
+  }
+};
+
+const selectAllEqipmentTypes = async () => {
+  try {
+    const list = await prisma.$queryRaw`
 select
-	b.id as id,
-	concat('Building ',
-	b."buildingNumber",
-	' @ ',
-	ltrim(rtrim(p."propertyName"))) as value
+	id,
+	ltrim(rtrim("equipmentTypeName")) as value
 from
-	"Building" b
-join "Property" p on
-	p.id = b."propertyId"
+	"EquipmentType" et
+where
+	 active = true
 order by
-	p."propertyName",
-	b."buildingNumber"`;
+	"equipmentTypeName"`;
+    return NextResponse.json(list, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(formatApiErros(error), { status: 400 });
+  }
+};
+
+const selectAllServiceStatus = async () => {
+  try {
+    const list = await prisma.$queryRaw`
+    select
+    	id,
+    	ltrim(rtrim(status)) as value
+    from
+    	"ServiceStatus"
+    order by
+    	id`;
+    return NextResponse.json(list, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(formatApiErros(error), { status: 400 });
+  }
+};
+
+const selectServiceTicketItemsByEquipmentTypeId = async (foreignId: string) => {
+  try {
+    const list = await prisma.$queryRaw`
+    select
+    	id,
+    	ltrim(rtrim(description)) as value
+    from
+    	"ServiceTicketOptions"
+    where
+    	"equipmentTypeId" = cast(${foreignId} as uuid)
+    	and active = true
+    order by
+    	description`;
     return NextResponse.json(list, { status: 200 });
   } catch (error) {
     return NextResponse.json(formatApiErros(error), { status: 400 });
@@ -112,15 +192,15 @@ order by
 const selectUnitByBuildingId = async (foreignId: string) => {
   try {
     const list = await prisma.$queryRaw`
-select
-	id as id,
-	"unitNumber" as value
-from
-	"Unit" u
-where
-	"buildingId" = ${foreignId}
-order by
-	"unitNumber"`;
+    select
+    	id as id,
+    	"unitNumber" as value
+    from
+    	"Unit" u
+    where
+    	"buildingId" = cast(${foreignId} as uuid)
+    order by
+    	"unitNumber"`;
 
     return NextResponse.json(list, { status: 200 });
   } catch (error) {
