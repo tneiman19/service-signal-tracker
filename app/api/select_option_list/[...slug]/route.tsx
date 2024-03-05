@@ -23,6 +23,8 @@ export async function GET(
       foreignTable === undefined &&
       foreignId === undefined:
       return selectAllProperties();
+    case queryTable === "unit" && foreignTable === "x" && foreignId === "x":
+      return selectAllUnits();
     case queryTable === "unit" &&
       foreignTable === "building" &&
       foreignId !== undefined:
@@ -37,10 +39,13 @@ export async function GET(
       return selectAllServiceStatus();
     case queryTable === "equipmentType":
       return selectAllEqipmentTypes();
+    case queryTable === "manufacturers":
+      return selectManufacturers();
     case queryTable === "serviceTicketOptions" &&
       foreignTable === "x" &&
       foreignId !== undefined:
       return selectServiceTicketItemsByEquipmentTypeId(foreignId);
+
     // Add more cases here if needed for other conditions
     default:
       return NextResponse.json(
@@ -120,6 +125,37 @@ const selectAllBuildings = async () => {
   }
 };
 
+const selectAllUnits = async () => {
+  try {
+    const list = await prisma.$queryRaw`
+   select
+	u.id as id,
+	concat(
+        ltrim(rtrim(p."propertyName")),
+	' | Bldg ',
+	ltrim(rtrim(b."buildingNumber")),
+	' | Unit ',
+	ltrim(rtrim(u."unitNumber"))
+    	) as value
+from
+	"Unit" u
+join "Building" b
+ on
+	u."buildingId" = b.id
+join "Property" p
+ on
+	b."propertyId" = p.id
+order by
+	p."entityId" ,
+	p."propertyName" ,
+	b."buildingNumber" ,
+	u."unitNumber"`;
+    return NextResponse.json(list, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(formatApiErros(error), { status: 400 });
+  }
+};
+
 const selectAllEqipmentStatus = async () => {
   try {
     const list = await prisma.$queryRaw`
@@ -130,6 +166,24 @@ const selectAllEqipmentStatus = async () => {
     	"EquipmentStatus"
     order by
     	status`;
+    return NextResponse.json(list, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(formatApiErros(error), { status: 400 });
+  }
+};
+
+const selectManufacturers = async () => {
+  try {
+    const list = await prisma.$queryRaw`
+    select
+	id as id,
+	ltrim(rtrim(m."manufacturerName")) as value
+from
+	"Manufacturer" m
+where
+	active = true
+order by
+	"manufacturerName"`;
     return NextResponse.json(list, { status: 200 });
   } catch (error) {
     return NextResponse.json(formatApiErros(error), { status: 400 });

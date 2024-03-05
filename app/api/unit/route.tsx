@@ -50,6 +50,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    
+
     const newUnit = await prisma.unit.create({ data: validation.data });
     return NextResponse.json(newUnit, { status: 201 });
   } catch (error: unknown) {
